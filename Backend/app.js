@@ -2,22 +2,28 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const path = require('path');
 const { Sequelize } = require('sequelize');
-// const saucesRoute = require('./routes/saucesRoute');
-// const userRoutes = require('./routes/user');
-
+const config = path.resolve('./config', 'config.json')
+const PostRoute = require('./Routes/postRoute');
+const userRoutes = require('./Routes/user');
+const models = require('./Models')
 const app = express();
 
-const sequelize = new Sequelize('Groupomania', 'postgres', '121212', {
+const sequelize = new Sequelize('database_development', 'postgres', '121212', {
   host: 'localhost',
   dialect: 'postgres'
 });
 
 try {
   sequelize.authenticate();
+  // models.sequelize.sync({ force: true }).then(
+  //   console.log("table sync success")
+  // );
   console.log('Successfully connected to Postgresql database!');
 } catch (error) {
   console.error('Unable to connect to the database:', error);
 }
+
+
 
 // CORS - Cross Origin Resource Sharing, Allows all requests from all origins to access API
 app.use((req, res, next) => {
@@ -31,8 +37,12 @@ app.use((req, res, next) => {
 app.use(bodyParser.json());
 
 // Set static folder and files
+
+app.use('/api/post', PostRoute);
+app.use('/api/auth', userRoutes);
+
 // app.use('/images', express.static(path.join(__dirname, 'images')));
-// app.use('/api/sauces', saucesRoute);
+// app.use('/api/posts', postsRoute);
 // app.use('/api/auth', userRoutes);
 
 
