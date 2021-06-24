@@ -1,4 +1,4 @@
-# groupmania
+# Groupomania
 
 ## Project setup
 ```
