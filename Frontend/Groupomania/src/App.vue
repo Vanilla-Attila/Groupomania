@@ -2,7 +2,10 @@
   <div id="app">
     <div id="nav">
       <router-link to="/">Home</router-link> |
-      <router-link to="/login">Login</router-link> |
+      <b-button pill variant="info">
+        <router-link to="/login">Login</router-link>
+      </b-button>
+      |
       <router-link to="/signUp">Sign Up</router-link>
     </div>
     <router-view />

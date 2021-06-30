@@ -1,27 +1,17 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const path = require('path');
-const { Sequelize } = require('sequelize');
+const {
+  Sequelize
+} = require('sequelize');
 const config = path.resolve('./config', 'config.json')
 const PostRoute = require('./Routes/postRoute');
 const userRoutes = require('./Routes/user');
 const models = require('./Models')
 const app = express();
 
-const sequelize = new Sequelize('database_development', 'postgres', '121212', {
-  host: 'localhost',
-  dialect: 'postgres'
-});
-
-try {
-  sequelize.authenticate();
-  // models.sequelize.sync({ force: true }).then(
-  //   console.log("table sync success")
-  // );
-  console.log('Successfully connected to Postgresql database!');
-} catch (error) {
-  console.error('Unable to connect to the database:', error);
-}
+// db connection 
+require('./database/connection')
 
 
 
