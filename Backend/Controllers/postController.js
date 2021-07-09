@@ -1,14 +1,42 @@
 const db = require('../Models');
 const fs = require('fs');
+const Post = require('../Models/Post');
 
 exports.createPost = async (req, res, next) => {
-  // User_id = ...
-  // post_text = ...
-  // img: ...
-  console.log(req.body);
-  //1st find the user
-  User.findOne
+  const User_id = req.body.User_id
+  const post_text = req.body.Post_text
 
+  let postImg
+
+  console.log(req.body);
+
+
+  if (!req.file) {
+    postImg = ''
+  } else {
+    const url = req.protocol + '://' + req.get('host')
+    const postImgURL = url + '/images/' + req.file.filename
+    postImg = postImgURL
+  }
+  if (!postImg && !post_text) {
+    return res.status(400).json({
+      message: 'Content missing!'
+    })
+  }
+
+  try {
+    let newPost = await Post.create({
+      user_id: User_id,
+      created_date: Date.now,
+      Post_imgURL: postImg,
+      Post_text: post_text
+    })
+    return res.send(newPost)
+  } catch (err) {
+    return res.status(500).json({
+      error: err.message
+    })
+  }
 };
 
 exports.getOnePost = (req, res, next) => {
@@ -31,7 +59,6 @@ exports.getOnePost = (req, res, next) => {
 
 exports.modifyPost = async (req, res, next) => {
 
-  // using mongose to select the sause then get the image URL out in a  variable then use this variable with the update function 
   let post = new Post({
     id: req.params.id
   })
@@ -53,10 +80,9 @@ exports.modifyPost = async (req, res, next) => {
     }).then(post => post)
 
     post = {
-      userId: data.userId,
-      postText: data.Post_text,
-      PostimgURL: url + '/images/' + req.file.filename,
-      createdDate: data.createdDate,
+      user_id: req.body.userId ? req.body.userId : ss.user_id,
+      Post_text: req.body.Post_text,
+      created_date: req.body.createdDate ? req.body.createdDate : Date.now
     };
   }
 
@@ -86,31 +112,32 @@ exports.deletePost = (req, res, next) => {
     }
   }).then(
     (post) => {
-      const filename = post.imageUrl.split('/images/')[1];
-      fs.unlink('images/' + filename, () => {
-        Post.deleteOne({
-          id: req.params.id
-        }).then(
-          () => {
-            res.status(200).json({
-              message: 'Deleted!'
-            });
-          }
-        ).catch(
-          (error) => {
-            res.status(400).json({
-              error: error
-            });
-          }
-        );
-      });
-    }
-  );
+
+      // const filename = post.imageUrl.split('/images/')[1];
+      // fs.unlink('images/' + filename, () => {
+      post.destroy().then(
+        () => {
+          res.status(200).json({
+            message: 'Deleted!'
+          });
+        }
+      ).catch(
+        (error) => {
+          res.status(400).json({
+            error: error
+          });
+        }
+      );
+    });
+  //}
+  //);
 };
 
 exports.getAllPosts = (req, res, next) => {
-  db.Post.findAll({
-    include: db.User
+  Post.findAll({
+    // include: [{
+    //   model: db.comment
+    // }]
   }).then(
     (posts) => {
       res.status(200).json(posts);
@@ -122,47 +149,4 @@ exports.getAllPosts = (req, res, next) => {
       });
     }
   );
-};
-
-// Work needs later
-exports.likePost = async (req, res, next) => {
-  try {
-    const foundPost = await Post.findOne({
-      id: req.params.id
-    });
-    const userId = req.body.userId;
-    const like = req.body.like;
-    if (like === 1) {
-      if (!foundPost.usersLiked.includes(userId)) {
-        foundPost.usersLiked.push(userId)
-      }
-    } else {
-      if (foundPost.usersLiked.includes(userId)) {
-        const userindex = foundPost.usersLiked.indexOf(userId)
-        foundPost.usersLiked.splice(userindex)
-      }
-      foundPost.likes = foundPost.usersLiked.length
-    }
-    if (like === -1) {
-      if (!foundPost.usersDisliked.includes(userId)) {
-        foundPost.usersDisliked.push(userId)
-      }
-    } else {
-      if (foundPost.usersDisliked.includes(userId)) {
-        const userindex = foundPost.usersDisliked.indexOf(userId)
-        foundPost.usersDisliked.splice(userindex)
-      }
-    }
-    foundPost.dislikes = foundPost.usersDisliked.length
-
-    foundPost.create()
-    res.status(200).json({
-      message: 'user liked or dislikes successfully'
-    })
-  } catch (error) {
-    console.log(error)
-    res.status(400).json({
-      error
-    })
-  }
 };

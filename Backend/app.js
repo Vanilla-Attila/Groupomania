@@ -7,12 +7,15 @@ const {
 const config = path.resolve('./config', 'config.json')
 const PostRoute = require('./Routes/postRoute');
 const userRoutes = require('./Routes/user');
-const models = require('./Models')
+const models = require('./Models');
+const sequelize = require('./database/connection');
 const app = express();
 
 // db connection 
 require('./database/connection')
-
+// sequelize.sync({
+//   force: false
+// })
 
 
 // CORS - Cross Origin Resource Sharing, Allows all requests from all origins to access API

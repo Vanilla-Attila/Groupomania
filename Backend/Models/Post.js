@@ -12,14 +12,14 @@ const Post = sequelize.define('Post', {
     primaryKey: true,
     autoIncrement: true
   },
-  User_id: {
+  user_id: {
     type: Sequelize.INTEGER,
     allowNull: false,
     onDelete: 'CASCADE',
     references: {
       model: 'User',
       key: 'id',
-      as: 'UserId',
+      as: 'User_Id',
     }
   },
   Post_text: {
@@ -32,13 +32,16 @@ const Post = sequelize.define('Post', {
   },
 }, {
   underscored: true,
-  freezeTableName: true
+  freezeTableName: true,
+  sync: {
+    force: true
+  }
 });
 
 User.hasMany(Post, {
   onDelete: 'cascade'
 });
-Post.BelongsTo(User, {
+Post.belongsTo(User, {
   onDelete: 'cascade'
 });
 

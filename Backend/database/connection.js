@@ -6,9 +6,9 @@ const sequelize = new Sequelize('database_development', 'postgres', '121212', {
 });
 
 sequelize.authenticate().then(() => {
-    console.log('Connection to postgres is ok!')
+  console.log('Connection to postgres is ok!')
 }).catch((error) => {
-    console.log('enable to connect to db!', error)
+  console.log('Unable to connect to db!', error)
 });
 
 module.exports = sequelize;

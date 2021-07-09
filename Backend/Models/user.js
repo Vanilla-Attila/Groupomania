@@ -28,11 +28,14 @@ const User = sequelize.define('User', {
   },
   is_admin: {
     type: Sequelize.BOOLEAN,
-    defaultValue: 0,
+    defaultValue: false,
   }
 }, {
   underscored: true,
-  freezeTableName: true
+  freezeTableName: true,
+  sync: {
+    force: true
+  }
 });
 
 module.exports = User

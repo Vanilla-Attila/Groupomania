@@ -215,7 +215,7 @@ exports.login = (req, res, next) => {
           const token = jwt.sign({
               id: user.id
             },
-            'IlikeWakingInTheMorning',
+            'RANDOM_TOKEN_SECRET',
             // token expires in 24h
             {
               expiresIn: '12h'

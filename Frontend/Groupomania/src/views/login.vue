@@ -15,8 +15,6 @@
   </div>
 </template>
 
-
-
 <script>
 export default {
   data() {
@@ -36,3 +34,5 @@ export default {
 };
 </script>
 
+<style>
+</style>
