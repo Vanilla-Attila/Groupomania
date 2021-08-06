@@ -98,6 +98,7 @@
                   id="form-image"
                   :disabled="busy"
                   accept="image/*"
+                  v-model="file"
                 ></b-form-file>
               </b-input-group>
             </b-form-group>
@@ -174,11 +175,23 @@ export default {
       email: "",
       password: "",
       counter: 0,
+      file: null,
     };
     // types: ["password"];
   },
   beforeDestroy() {
     this.clearInterval();
+  },
+  mounted() {
+    fetch("http://localhost:3000/api/auth/getOne/" + this.$route.params.id, {
+      method: "Get",
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        this.firstName = data.first_name;
+        this.lastName = data.last_name;
+        this.email = data.email;
+      });
   },
   methods: {
     clearInterval() {
@@ -218,12 +231,21 @@ export default {
         email: this.email,
         password: this.password,
       };
+      let User = JSON.parse(localStorage.getItem("User"));
+      let token = User.token;
+      let formdata = new FormData();
+      formdata.append("first_name", this.firstName);
+      formdata.append("id", this.$route.params.id);
+      formdata.append("last_name", this.lastName);
+      formdata.append("email", this.email);
+      formdata.append("password", this.password);
+      formdata.append("image", this.password);
       fetch("http://localhost:3000/api/auth/updateUser", {
         method: "PUT", // or 'PUT'
         headers: {
-          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify(obj),
+        body: formdata,
       })
         .then((res) => res.json())
         .then((data) => {

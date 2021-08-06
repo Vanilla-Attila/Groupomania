@@ -44,7 +44,7 @@ exports.getOneComment = async (res, req, next) => {
 
 exports.createComment = async (req, res, next) => {
     const url = req.protocol + '://' + req.get('host');
-    const post = req.body.post;
+    const post = req.body.Comment_text;
     const User_id = req.body.user_id;
     const Post_id = req.body.post_id;
     let comment_text_img = ''

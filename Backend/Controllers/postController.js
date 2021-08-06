@@ -48,7 +48,10 @@ exports.getOnePost = (req, res, next) => {
   Post.findOne({
     where: {
       id: req.params.id
-    }
+    },
+    include: [{
+      model: User
+    }]
   }).then(
     (post) => {
       res.status(200).json(post);
@@ -68,12 +71,12 @@ exports.modifyPost = async (req, res, next) => {
     id: req.params.id
   })
   if (req.file) {
-    const data = JSON.parse(req.body.post) //string format => converted to json
+    const data = req.body //string format => converted to json
     const url = req.protocol + '://' + req.get('host');
     post = {
-      userId: data.userId,
-      postText: data.Post_text,
-      PostimgURL: url + '/images/' + req.file.filename,
+      userId: data.User_id,
+      postText: data.post_text,
+      Post_imgURL: url + '/images/' + req.file.filename,
       createdDate: data.createdDate,
     };
   } else {
@@ -85,8 +88,8 @@ exports.modifyPost = async (req, res, next) => {
     }).then(post => post)
 
     post = {
-      user_id: req.body.userId ? req.body.userId : ss.user_id,
-      Post_text: req.body.Post_text,
+      user_id: req.body.User_id ? req.body.User_id : ss.user_id,
+      Post_text: req.body.post_text,
       created_date: req.body.createdDate ? req.body.createdDate : Date.now
     };
   }

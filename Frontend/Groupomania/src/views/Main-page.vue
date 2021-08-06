@@ -89,6 +89,11 @@
                 class="m-2"
               >
                 <b-dropdown-item
+                  @click="
+                    () => {
+                      $router.push('post/' + post.id);
+                    }
+                  "
                   ><b-icon
                     type="button"
                     icon="pencil-fill"
@@ -115,19 +120,19 @@
             alt="Image"
             bottom
           ></b-card-img>
-          <b-list-group-item>
+          <!-- <b-list-group-item>
             <div class="like-icon-with-counter d-flex">
               <b-icon icon="hand-thumbs-up" scale="2"></b-icon>
               <span class="like-index">2</span>
             </div>
-          </b-list-group-item>
+          </b-list-group-item> -->
           <b-list-group-item class="card-footer">
-            <div>
+            <!-- <div>
               <b-button size="lg" variant="primary" class="mb-2">
                 <b-icon icon="hand-thumbs-up" class="like-icon"></b-icon>
               </b-button>
               <span class="like-btn-span">Liked</span>
-            </div>
+            </div> -->
 
             <b-button
               @click="showComment = !showComment"
@@ -144,7 +149,7 @@
               v-for="comment in post.Comments"
               :key="comment.id"
             >
-              <b-container fluid class="d-flex">
+              <b-container fluid>
                 <b-avatar
                   class="main-avatar"
                   variant="info"
@@ -152,12 +157,20 @@
                   size="3rem"
                 ></b-avatar>
 
-                <b-form-label
+                <b-label
                   class="create-post-text"
                   id="textarea-plaintext"
                   size="sm"
-                  >{{ comment.Comment_text }}</b-form-label
+                  >{{ comment.Comment_text }}</b-label
                 >
+                <div class="comment-image text-center">
+                  <img
+                    v-if="comment.Comment_text_imgURL"
+                    :src="comment.Comment_text_imgURL"
+                    width="50px"
+                    height="50px"
+                  />
+                </div>
               </b-container>
               <b-dropdown
                 id="dropdown-right"
@@ -166,14 +179,14 @@
                 variant="light"
                 class="m-2"
               >
-                <b-dropdown-item
+                <!-- <b-dropdown-item
                   ><b-icon
                     type="button"
                     icon="pencil-fill"
                     class="mr-2"
                   ></b-icon
                   >Modify</b-dropdown-item
-                >
+                > -->
                 <b-dropdown-item @click="handleDeleteComment(comment.id)"
                   ><b-icon type="button" icon="trash" class="mr-2"></b-icon
                   >Delete</b-dropdown-item
@@ -195,19 +208,43 @@
                   id="textarea-small"
                   size="sm"
                   placeholder="Comment"
+                  v-model="commentText"
                 ></b-form-textarea>
               </b-container>
+
+              <div class="create-comment-icons">
+                <b-button
+                  size="lg"
+                  variant="light"
+                  class="mb-2"
+                  v-b-modal.my-modal2
+                >
+                  <b-icon icon="image"></b-icon>
+                </b-button>
+
+                <b-button
+                  size="lg"
+                  variant="light"
+                  class="mb-2"
+                  @click="handleSubmitComment(post.id)"
+                >
+                  <b-icon icon="reply"></b-icon>
+                </b-button>
+              </div>
             </div>
           </div>
         </b-card>
       </div>
+      <b-modal id="my-modal2"
+        ><b-form-file v-model="file3" class="mt-3" plain></b-form-file
+      ></b-modal>
     </main>
   </div>
 </template>
 
 <script>
 var moment = require("moment");
-import axios from "axios";
+
 import User from "../components/User.vue";
 export default {
   components: { User },
@@ -216,6 +253,7 @@ export default {
     return {
       moment: moment,
       file2: null,
+      file3: null,
       selectedFile: null,
       text: "",
       post: "",
@@ -227,14 +265,12 @@ export default {
       AllPost: [],
       AllComment: [],
       showComment: false,
+      commentText: "",
     };
   },
   methods: {
     onFileSelected(event) {
       this.selectedFile = event.target.files[0];
-    },
-    onUpload() {
-      axios.post("");
     },
 
     handleSubmit() {
@@ -258,10 +294,51 @@ export default {
         body: formdata,
       })
         .then((res) => res.json())
-        .then((data) => console.log(data));
+        .then((data) => {
+          console.log(data);
+          this.$nextTick(() => {
+            this.postText = "";
+            this.file2 = null;
+            this.getAllPost();
+          });
+        });
       // // Push the name to submitted names
       // this.submittedPosts.push(this.post);
     },
+
+    handleSubmitComment(id) {
+      let createComment = {
+        comment_imgURL: this.commentIMG,
+        comment_text: this.commentText,
+      };
+      let User = JSON.parse(localStorage.getItem("User"));
+      let formdata = new FormData();
+      formdata.append("Comment_text", this.commentText);
+      formdata.append("user_id", User.id);
+      formdata.append("post_id", id);
+      formdata.append("image", this.file3);
+      console.log(formdata);
+      fetch("http://localhost:3000/api/comment/createComment", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${User.token}`,
+        },
+        body: formdata,
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          console.log(data);
+
+          this.$nextTick(() => {
+            this.commentText = "";
+            this.file3 = null;
+            this.getAllPost();
+          });
+        });
+      // // Push the name to submitted names
+      // this.submittedPosts.push(this.post);
+    },
+
     handleDeletePost(id) {
       let User = JSON.parse(localStorage.getItem("User"));
       let token = User.token;
@@ -273,7 +350,13 @@ export default {
         },
       })
         .then((data) => data.json())
-        .then((data) => console.log(data));
+        .then((data) => {
+          console.log(data);
+
+          this.$nextTick(() => {
+            this.getAllPost();
+          });
+        });
     },
     handleDeleteComment(id) {
       let User = JSON.parse(localStorage.getItem("User"));
@@ -286,21 +369,29 @@ export default {
         },
       })
         .then((data) => data.json())
-        .then((data) => console.log(data));
+        .then((data) => {
+          console.log(data);
+          this.$nextTick(() => {
+            this.getAllPost();
+          });
+        });
     },
 
     reloadPage() {
       window.location.reload();
     },
+    getAllPost() {
+      fetch("http://localhost:3000/api/post/")
+        .then((res) => res.json())
+        .then((data) => {
+          this.AllPost = data;
+          console.warn(data);
+        })
+        .catch((err) => console.log(err.message));
+    },
   },
   mounted() {
-    fetch("http://localhost:3000/api/post/")
-      .then((res) => res.json())
-      .then((data) => {
-        this.AllPost = data;
-        console.warn(data);
-      })
-      .catch((err) => console.log(err.message));
+    this.getAllPost();
   },
 };
 </script>
@@ -334,12 +425,14 @@ export default {
 }
 .create-div {
   margin: 40px 0;
+  border: 1px solid #f2f2f2;
 }
 .create-comment-icons {
   margin-top: 5px;
   display: flex;
   justify-content: space-around;
 }
+
 .main-avatar {
   margin-right: 15px;
 }
