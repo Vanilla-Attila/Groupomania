@@ -7,9 +7,11 @@ const {
 const config = path.resolve('./config', 'config.json')
 const PostRoute = require('./Routes/postRoute');
 const userRoutes = require('./Routes/user');
+const commentRoutes = require('./Routes/commentRoute');
 const models = require('./Models');
 const sequelize = require('./database/connection');
 const app = express();
+
 
 // db connection 
 require('./database/connection')
@@ -33,8 +35,9 @@ app.use(bodyParser.json());
 
 app.use('/api/post', PostRoute);
 app.use('/api/auth', userRoutes);
+app.use('/api/comment', commentRoutes);
 
-// app.use('/images', express.static(path.join(__dirname, 'images')));
+app.use('/images', express.static(path.join(__dirname, 'images')));
 // app.use('/api/posts', postsRoute);
 // app.use('/api/auth', userRoutes);
 

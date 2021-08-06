@@ -1,10 +1,15 @@
-const db = require('../Models');
+const db = require('../Models/index.js');
 const fs = require('fs');
 const Post = require('../Models/Post');
+const User = require('../Models/user');
+const Comment = require('../Models/Comment');
+
 
 exports.createPost = async (req, res, next) => {
+
+  let body = req.body
   const User_id = req.body.User_id
-  const post_text = req.body.Post_text
+  const post_text = req.body.post_text
 
   let postImg
 
@@ -135,9 +140,16 @@ exports.deletePost = (req, res, next) => {
 
 exports.getAllPosts = (req, res, next) => {
   Post.findAll({
-    // include: [{
-    //   model: db.comment
-    // }]
+    include: [{
+      model: User
+
+    }, {
+
+      model: Comment,
+      include: {
+        model: User
+      }
+    }]
   }).then(
     (posts) => {
       res.status(200).json(posts);

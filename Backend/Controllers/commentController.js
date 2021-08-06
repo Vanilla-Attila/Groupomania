@@ -1,14 +1,13 @@
 const Comment = require('../Models/Comment')
-const User = require('../Models/user')
-const Post = require('../Models/Post')
+const db = require('../Models')
 
 exports.getAllComments = async (req, res, next) => {
     try {
         const allComments = await Comment.findAll({
             where: {
-                id: req.params.id
+                post_id: req.params.id
             },
-            include: [User, Post]
+            // include: [db.User, db.Post]
         })
         if (!allComments) {
             return res.status(400).json({
@@ -46,8 +45,8 @@ exports.getOneComment = async (res, req, next) => {
 exports.createComment = async (req, res, next) => {
     const url = req.protocol + '://' + req.get('host');
     const post = req.body.post;
-    const User_id = req.body.User_id;
-    const Post_id = req.body.Post_id;
+    const User_id = req.body.user_id;
+    const Post_id = req.body.post_id;
     let comment_text_img = ''
     if (req.file) {
         comment_text_img = url + '/images/' + req.file.filename;
@@ -59,9 +58,10 @@ exports.createComment = async (req, res, next) => {
     }
     try {
         let newComment = await Comment.create({
-            Post_id: Post_id,
-            User_id: User_id,
-            comment_text_img: comment_text_img,
+            post_id: Post_id,
+            user_id: User_id,
+            Comment_text: req.body.Comment_text,
+            Comment_text_imgURL: comment_text_img,
             post: post,
             created_date: Date.now(),
         });
@@ -83,9 +83,9 @@ exports.modifyComment = async (req, res, next) => {
         const url = req.protocol + '://' + req.get('host');
         comment = {
             userId: data.userId,
-            commentText: data.Comment_text,
-            CommentimgURL: url + '/images/' + req.file.filename,
-            createdDate: data.createdDate,
+            Comment_text: data.Comment_text,
+            Comment_text_imgURL: url + '/images/' + req.file.filename,
+            created_date: data.createdDate,
         };
     } else {
 
@@ -96,7 +96,6 @@ exports.modifyComment = async (req, res, next) => {
         }).then(comment => comment)
 
         comment = {
-            user_id: req.body.userId ? req.body.userId : ss.user_id,
             Comment_text: req.body.Comment_text,
             created_date: req.body.createdDate ? req.body.createdDate : Date.now
         };

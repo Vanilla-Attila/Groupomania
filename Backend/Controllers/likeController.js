@@ -7,7 +7,7 @@ exports.like = async (req, res, next) => {
         const newLike = await Like.create({
             User_id: req.body.User_id,
             Post_id: req.body.Post_id,
-            id: req.body.id
+
         })
         return res.send(newLike)
     } catch (error) {

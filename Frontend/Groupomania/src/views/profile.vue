@@ -9,7 +9,7 @@
         />
       </div>
       <div class="div-height">
-        <h2 class="h2">Login:</h2>
+        <h2 class="h2">Update:</h2>
         <div class="d-flex justify-content-center">
           <b-icon
             icon="arrow-down"
@@ -19,6 +19,40 @@
         </div>
         <div class="div-border">
           <b-form class="position-relative p-3" @submit.prevent="onSubmit">
+            <b-form-group
+              label="First name"
+              label-for="form-name"
+              label-cols-lg="2"
+            >
+              <b-input-group>
+                <b-input-group-prepend is-text>
+                  <b-icon icon="person-fill"></b-icon>
+                </b-input-group-prepend>
+                <b-form-input
+                  id="form-name"
+                  v-model="firstName"
+                  :disabled="busy"
+                ></b-form-input>
+              </b-input-group>
+            </b-form-group>
+
+            <b-form-group
+              label="Last name"
+              label-for="form-Lname"
+              label-cols-lg="2"
+            >
+              <b-input-group>
+                <b-input-group-prepend is-text>
+                  <b-icon icon="person-fill"></b-icon>
+                </b-input-group-prepend>
+                <b-form-input
+                  id="form-Lname"
+                  v-model="lastName"
+                  :disabled="busy"
+                ></b-form-input>
+              </b-input-group>
+            </b-form-group>
+
             <b-form-group label="Email" label-for="form-mail" label-cols-lg="2">
               <b-input-group>
                 <b-input-group-prepend is-text>
@@ -51,13 +85,30 @@
               </b-input-group>
             </b-form-group>
 
+            <b-form-group
+              label="Image"
+              label-for="form-image"
+              label-cols-lg="2"
+            >
+              <b-input-group>
+                <b-input-group-prepend is-text>
+                  <b-icon icon="image-fill"></b-icon>
+                </b-input-group-prepend>
+                <b-form-file
+                  id="form-image"
+                  :disabled="busy"
+                  accept="image/*"
+                ></b-form-file>
+              </b-input-group>
+            </b-form-group>
+
             <div class="d-flex justify-content-center">
               <b-button
                 variant="info"
                 ref="submit"
                 type="submit"
                 :disabled="busy"
-                >Login</b-button
+                >Update</b-button
               >
             </div>
 
@@ -72,7 +123,7 @@
                   <b-progress
                     min="1"
                     max="20"
-                    value="20"
+                    :value="counter"
                     variant="success"
                     height="3px"
                     class="mx-n4 rounded-0"
@@ -112,16 +163,19 @@
 
 <script>
 export default {
-  name: "login",
+  name: "profile",
   data() {
     return {
       busy: false,
       processing: false,
-      done: false,
-      interval: null,
+      intervall: null,
+      firstName: "",
+      lastName: "",
       email: "",
       password: "",
+      counter: 0,
     };
+    // types: ["password"];
   },
   beforeDestroy() {
     this.clearInterval();
@@ -138,6 +192,8 @@ export default {
       this.$refs.dialog.focus();
     },
     onHidden() {
+      // In this case, we return focus to the submit button
+      // You may need to alter this based on your application requirements
       this.$refs.submit.focus();
     },
     onSubmit() {
@@ -146,87 +202,43 @@ export default {
     },
     onCancel() {},
     onOK() {
+      // this.counter = 1;
       this.processing = true;
-
-      let obj = { email: this.email, password: this.password };
-      fetch("http://localhost:3000/api/auth/login", {
-        method: "POST",
+      // Simulate an async request
+      // this.clearInterval();
+      // this.interval = setInterval(() => {
+      //   if (this.counter < 20) {
+      //     this.counter = this.counter + 1;
+      //   } else {
+      //     this.clearInterval();
+      let obj = {
+        id: this.$route.params.id,
+        first_name: this.firstName,
+        last_name: this.lastName,
+        email: this.email,
+        password: this.password,
+      };
+      fetch("http://localhost:3000/api/auth/updateUser", {
+        method: "PUT", // or 'PUT'
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify(obj),
       })
         .then((res) => res.json())
-        .then(
-          (data) => {
-            console.log(data);
-            if (data.token) {
-              localStorage.setItem("User", JSON.stringify(data));
-              this.$nextTick(() => {
-                this.busy = this.processing = false;
-              });
-
-              this.$router.push("/main");
-            } else {
-              alert(data.error);
-              this.busy = this.processing = false;
-            }
-          },
-          (error) => {
-            console.log("error block", error);
-          }
-        )
-        .catch((err) => {
-          console.log("catch block", err);
+        .then((data) => {
+          console.log(data);
+          this.$nextTick(() => {
+            this.busy = this.processing = false;
+          });
+          this.$router.push("/login");
         });
     },
+    //   }, 350);
+    // },
   },
 };
 </script>
 
 <style>
-.start {
-  background: #f2f2f2;
-  height: 100vh;
-}
-.titles {
-  display: flex;
-  justify-content: center;
-  background: #5bc0de;
-  border-radius: 16px;
-}
-.h2 {
-  text-align: center;
-  margin-bottom: 35px;
-  text-decoration: underline;
-  font-weight: bold;
-}
-.su-img {
-  width: 22%;
-}
-.main-container {
-  text-align: center;
-}
-
-.div-height {
-  position: relative;
-  bottom: 62px;
-}
-
-.div-border {
-  border: 2px solid #5bc0de;
-  padding: 30px 20px;
-  border-radius: 16px;
-}
-
-@media all and (max-width: 800px) {
-  .div-height {
-    padding: 0;
-    margin: 20px 0 0 5px;
-  }
-  .su-img {
-    position: relative;
-    bottom: 13px;
-  }
-}
 </style>

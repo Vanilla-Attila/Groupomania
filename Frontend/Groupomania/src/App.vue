@@ -1,37 +1,18 @@
 <template>
   <div>
-    <div class="div-img">
-      <img
-        src="./assets/icon-left-font-monochrome-white.png"
-        alt="Logo picture"
-      />
-    </div>
-    <div class="div-right-side">
-      <div class="h3">
-        <h3>The socail media for Groupomania employees</h3>
-      </div>
-      <div class="div-btn">
-        <router-link to="/login" class="btn-login"
-          >Login
-          <!-- <button class="btn-login">Login</button> -->
-        </router-link>
-        <router-link to="/signUp" class="btn-sign-up">Sign Up</router-link>
-        <!-- <button class="btn-sign-up">Sign up</button> -->
-        <signUp />
-        <router-view />
-      </div>
-
-      <p>&copy; 2021 Groupomania</p>
-    </div>
+    <router-view />
   </div>
 </template>
 
 <script>
-import signUp from "./views/signUp.vue";
+// import signUp from "./views/signUp.vue";
 
 export default {
   name: "App",
-  components: { signUp },
+  // components: { signUp },
+  mounted() {
+    this.$router.push("/start");
+  },
 };
 </script>
 
@@ -60,7 +41,7 @@ export default {
   background: #00688b;
   background-image: linear-gradient(#388e8e, #00cdcd);
 }
-img {
+.start-img {
   image-rendering: pixelated;
   width: 90%;
 }

@@ -2,48 +2,50 @@
 const sequelize = require('../database/connection');
 const Sequelize = require('sequelize');
 
-//import models for association
-const User = require('./user');
-const Post = require('../Post');
 
-const Comment = sequelize.define('Post', {
+//import models for association
+const User = require('./User');
+const Post = require('./Post');
+
+const Comment = sequelize.define('Comment', {
   // Model attributes are defined here
   id: {
-    type: DataTypes.INTEGER,
+    type: Sequelize.INTEGER,
     allowNull: false,
     primaryKey: true,
     autoIncrement: true
   },
-  User_id: {
+  user_id: {
     type: Sequelize.INTEGER,
     allowNull: false,
     onDelete: 'CASCADE',
     references: {
       model: 'User',
       key: 'id',
-      as: 'UserId',
+      as: 'User_id',
     }
   },
-  Post_id: {
+  post_id: {
     type: Sequelize.INTEGER,
     allowNull: false,
     onDelete: 'CASCADE',
     references: {
-      model: 'User',
+      model: 'Post',
       key: 'id',
-      as: 'UserId',
+      as: 'Post_id',
     }
   },
   Comment_text: {
-    type: DataTypes.STRING,
+    type: Sequelize.STRING,
     allowNull: false
   },
   Comment_text_imgURL: {
-    type: DataTypes.STRING,
+    type: Sequelize.STRING,
     allowNull: false
   },
 }, {
-  underscored: true
+  underscored: true,
+  freezeTableName: true
 });
 
 //DB relations
@@ -61,4 +63,8 @@ Comment.belongsTo(Post, {
   onDelete: 'cascade'
 });
 
-module.exports = Post
+// Comment.sync({
+//   force: true
+// })
+
+module.exports = Comment

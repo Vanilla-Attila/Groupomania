@@ -38,7 +38,7 @@ exports.getOneUser = async (req, res, next) => {
   try {
     const {
       id
-    } = req.body
+    } = req.params
     const user = await User.findOne({
       where: {
         id
@@ -198,7 +198,7 @@ exports.login = (req, res, next) => {
     (user) => {
       console.log(user.id)
       if (!user) {
-        return res.status(401).json({
+        return res.status(404).json({
           message: 'User not found!'
         });
       }
@@ -207,8 +207,8 @@ exports.login = (req, res, next) => {
         (valid) => {
           if (!valid) {
 
-            return res.status(401).json({
-              error: 'Invalide password!'
+            return res.status(404).json({
+              error: 'Invalid password!'
             });
           }
           //  If the password is valid we send back the encoded user id and token
@@ -228,7 +228,7 @@ exports.login = (req, res, next) => {
       ).catch(
         (error) => {
           res.status(500).json({
-            error: error.message
+            error: 'Email or password is not correct'
           });
         }
       );
@@ -236,7 +236,7 @@ exports.login = (req, res, next) => {
   ).catch(
     (error) => {
       res.status(500).json({
-        error: error.message
+        error: 'Email or password is not correct'
       });
     }
   );
