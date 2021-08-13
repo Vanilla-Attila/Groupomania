@@ -4,6 +4,8 @@ const isAdmin = require('../Middleware/isAdmin')
 const userCtrl = require('../Controllers/user');
 const auth = require('../middleware/auth');
 const multer = require('../middleware/multer-config')
+
+
 router.post('/signup', userCtrl.signup);
 router.post('/login', userCtrl.login);
 router.get('/getAll/', userCtrl.getAllUsers);

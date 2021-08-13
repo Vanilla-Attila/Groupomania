@@ -71,6 +71,7 @@ exports.createComment = async (req, res, next) => {
             message: `Error: ${err.message}`
         })
     }
+
 }
 
 exports.modifyComment = async (req, res, next) => {
@@ -125,9 +126,7 @@ exports.deleteComment = (req, res, next) => {
         where: {
             id: req.params.id
         },
-        order: [
-            ['createdAt', 'ASC']
-        ]
+
     }).then(
         (comment) => {
 

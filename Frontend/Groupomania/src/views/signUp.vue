@@ -218,11 +218,20 @@ export default {
       })
         .then((res) => res.json())
         .then((data) => {
+          if (data.error) {
+            alert(data.error);
+            this.$nextTick(() => {
+              this.busy = this.processing = false;
+            });
+          } else {
+            this.$nextTick(() => {
+              this.busy = this.processing = false;
+            });
+            this.$router.push("/login");
+          }
           console.log(data);
-          this.$nextTick(() => {
-            this.busy = this.processing = false;
-          });
-          this.$router.push("/login");
+
+          // this.$router.push("/login");
         });
     },
   },

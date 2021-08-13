@@ -117,12 +117,7 @@
             {{ post.Post_text }}
           </b-card-body>
           <b-card-img
-            :src="
-              post.Post_imgURL
-                ? post.Post_imgURL
-                : '../assets/icon-left-font-monochrome-black.png'
-            "
-            alt="Image"
+            :src="post.Post_imgURL ? post.Post_imgURL : ''"
             bottom
           ></b-card-img>
           <div class="like-counter-container">

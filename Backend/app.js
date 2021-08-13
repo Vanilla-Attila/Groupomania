@@ -33,7 +33,7 @@ app.use((req, res, next) => {
 // Convert the body to json object because we are receiving json from frontend
 app.use(bodyParser.json());
 
-// Set static folder and files
+// Mounting middlewares
 
 app.use('/api/post', PostRoute);
 app.use('/api/auth', userRoutes);

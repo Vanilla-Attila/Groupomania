@@ -142,50 +142,67 @@ exports.signup = (req, res, next) => {
   } = req.body;
   console.log(password)
 
-  // hashing the password for 10 rounds
-  bcrypt.hash(req.body.password, 10).then(
-    (hash) => {
-      const newUser = {
-        first_name: first_name,
-        last_name: last_name,
-        password: hash,
-        email: email,
-        is_admin: is_admin
-      };
-      User.create(newUser).then(
-        () => {
-          const user = User.findOne({
-            where: {
-              email
-            }
-          }).then((createdUser) => {
-            const token = jwt.sign({
-                id: createdUser
-              },
-              'IlikeWakingInTheMorning', {
-                expiresIn: '12h'
-              }
-            );
-            res.send({
-              id: createdUser.id,
-              token: token,
-              first_name: createdUser.first_name,
-              last_name: createdUser.last_name,
-            })
-          }).catch((error) => {
-            res.send({
-              message: error.message
-            })
-          })
-        }).catch(
-        (error) => {
-          res.send({
-            message: error.message
-          })
-        }
-      )
+  User.findOne({
+    where: {
+      email: req.body.email
     }
-  );
+  }).then(
+    (founduser) => {
+
+      if (founduser) {
+        console.log(founduser.id)
+        return res.status(404).json({
+          error: 'Email already exists!'
+        });
+      } else {
+        // hashing the password for 10 rounds
+        bcrypt.hash(req.body.password, 10).then(
+          (hash) => {
+            const newUser = {
+              first_name: first_name,
+              last_name: last_name,
+              password: hash,
+              email: email,
+              is_admin: is_admin
+            };
+            User.create(newUser).then(
+              () => {
+                const user = User.findOne({
+                  where: {
+                    email
+                  }
+                }).then((createdUser) => {
+                  const token = jwt.sign({
+                      id: createdUser
+                    },
+                    'IlikeWakingInTheMorning', {
+                      expiresIn: '12h'
+                    }
+                  );
+                  res.send({
+                    id: createdUser.id,
+                    token: token,
+                    first_name: createdUser.first_name,
+                    last_name: createdUser.last_name,
+                  })
+                }).catch((error) => {
+                  res.send({
+                    message: error.message
+                  })
+                })
+              }).catch(
+              (error) => {
+                res.send({
+                  message: error.message
+                })
+              }
+            )
+          }
+        );
+      }
+    })
+
+
 };
 
 exports.login = (req, res, next) => {
