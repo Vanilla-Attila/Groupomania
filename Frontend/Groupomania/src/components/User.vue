@@ -1,19 +1,35 @@
 <template>
   <div class="avatar-div ml-auto">
-    <b-list-group-item fluid class="avatar text-right">
-      <b-avatar
-        button
-        v-b-tooltip.hover
-        title="Edit user details"
-        @click="onClick(UserData.id)"
-        src="https://placekitten.com/300/300"
-      ></b-avatar>
-      <span class="mx-3 mr-5"
-        >{{ UserData.first_name }} {{ UserData.last_name }}</span
-      >
-      <b-button variant="outline-dark" class="mb-2" @click="logout">
-        <b-icon icon="power" aria-hidden="true"></b-icon> Logout
-      </b-button>
+    <b-list-group-item fluid class="avatar">
+      <div class="d-flex align-items-center justify-content-between">
+        <!-- <b-avatar
+          button
+          v-b-tooltip.hover
+          title="Edit user details"
+          @click="onClick(UserData.id)"
+          src="https://placekitten.com/300/300"
+        ></b-avatar> -->
+        <b-avatar
+          variant="primary"
+          button
+          v-b-tooltip.hover
+          title="Edit user details"
+          @click="onClick(UserData.id)"
+        >
+          {{ UserData.first_name[0] + UserData.last_name[0] }}</b-avatar
+        >
+        <h6 class="mx-3 mr-4 name">
+          {{ UserData.first_name }} {{ UserData.last_name }}
+        </h6>
+        <b-icon
+          icon="power"
+          variant="danger"
+          class="h2 my-auto"
+          aria-hidden="true"
+          type="button"
+          @click="logout"
+        ></b-icon>
+      </div>
     </b-list-group-item>
   </div>
 </template>
@@ -58,14 +74,10 @@ export default {
 <style>
 .avatar-div {
   border-radius: 12px;
-  box-shadow: 5px 5px 5px gray;
+  box-shadow: 5px 5px 5px #c0c0c0;
+  display: flex;
 }
-.bell {
-  /* color: #ea3c53; */
-  color: #236b8e;
-  position: relative;
-  top: 6px;
-}
+
 .avatar {
   /* border-radius: 16px 0; */
   border: none;

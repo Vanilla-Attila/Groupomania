@@ -1,16 +1,14 @@
 <template>
-  <div class="post-card my-3">
+  <div class="post-card my-3 post-card-container mx-auto">
     <b-card class="post-margin">
       <div v-if="post">
         <b-list-group-item class="d-flex align-items-center">
-          <b-avatar
-            variant="info"
-            src="https://placekitten.com/300/300"
-            class="mr-3"
-          ></b-avatar>
-          <span class="mr-auto">{{
-            post.User.first_name + " " + post.User.last_name
-          }}</span>
+          <b-avatar variant="primary" class="mr-2">{{
+            post.User.first_name[0] + post.User.last_name[0]
+          }}</b-avatar>
+          <h6 class="mr-auto">
+            {{ post.User.first_name + " " + post.User.last_name }}
+          </h6>
           <small>"{{ moment(post.createdAt).fromNow() }}"</small>
         </b-list-group-item>
       </div>
@@ -111,4 +109,13 @@ export default {
 </script>
 
 <style>
+.post-card-container {
+  width: 50%;
+}
+
+@media all and (max-width: 800px) {
+  .post-card-container {
+    width: 100vw;
+  }
+}
 </style>

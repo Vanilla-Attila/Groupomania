@@ -4,6 +4,7 @@ const Sequelize = require('sequelize');
 
 //User model
 const User = require('./user.js');
+const Like = require('./Likes.js')
 
 const Post = sequelize.define('Post', {
   id: {
@@ -39,6 +40,12 @@ const Post = sequelize.define('Post', {
 });
 
 User.hasMany(Post, {
+  onDelete: 'cascade'
+});
+User.hasMany(Like, {
+  onDelete: 'cascade'
+});
+Post.hasMany(Like, {
   onDelete: 'cascade'
 });
 Post.belongsTo(User, {

@@ -124,7 +124,10 @@ exports.deleteComment = (req, res, next) => {
     Comment.findOne({
         where: {
             id: req.params.id
-        }
+        },
+        order: [
+            ['createdAt', 'ASC']
+        ]
     }).then(
         (comment) => {
 

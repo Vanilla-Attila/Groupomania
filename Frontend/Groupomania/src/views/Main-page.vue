@@ -12,32 +12,32 @@
           />
         </b-navbar-brand>
 
-        <b-navbar-toggle target="nav-collapse"></b-navbar-toggle>
+        <b-nav-form class="searchbar">
+          <b-form-input class="mr-sm-2" placeholder="Search"></b-form-input>
+          <b-button
+            variant="outline-dark"
+            class="my-2 my-sm-0 search"
+            type="submit"
+            >Search</b-button
+          >
+        </b-nav-form>
 
-        <b-collapse id="nav-collapse" is-nav>
-          <b-nav-form>
-            <b-form-input class="mr-sm-2" placeholder="Search"></b-form-input>
-            <b-button
-              variant="outline-dark"
-              class="my-2 my-sm-0 search"
-              type="submit"
-              >Search</b-button
-            >
-          </b-nav-form>
-        </b-collapse>
         <User />
       </b-navbar>
       <h1 class="text-center h1">Groupomania</h1>
     </header>
     <main class="main-container mx-auto">
-      <div class="create-div">
+      <div class="create-post-container">
         <b-container fluid class="d-flex">
-          <b-avatar
+          <!-- <b-avatar
             class="main-avatar"
             variant="info"
             src="https://placekitten.com/300/300"
             size="4rem"
-          ></b-avatar>
+          ></b-avatar> -->
+          <b-avatar variant="primary" class="mr-2">{{
+            UserData.first_name[0] + UserData.last_name[0]
+          }}</b-avatar>
 
           <b-form-textarea
             v-model="postText"
@@ -70,23 +70,28 @@
       <div class="post-card my-3" v-for="post in AllPost" :key="post.id">
         <b-card class="post-margin">
           <div>
-            <b-list-group-item class="d-flex align-items-center">
-              <b-avatar
+            <div class="d-flex align-items-center user-post">
+              <!-- <b-avatar
                 variant="info"
                 src="https://placekitten.com/300/300"
                 class="mr-3"
-              ></b-avatar>
-              <span class="mr-auto">{{
-                post.User.first_name + " " + post.User.last_name
-              }}</span>
-              <small>{{ moment(post.createdAt).fromNow() }}</small>
+              ></b-avatar> -->
+              <b-avatar variant="primary" class="mr-2">{{
+                post.User.first_name[0] + post.User.last_name[0]
+              }}</b-avatar>
+              <div class="post-name-date">
+                <h6 class="text-left name">
+                  {{ post.User.first_name + " " + post.User.last_name }}
+                </h6>
+                <small> {{ moment(post.createdAt).calendar() }}</small>
+              </div>
 
               <b-dropdown
                 id="dropdown-right"
                 right
                 text="..."
                 variant="light"
-                class="m-2"
+                class="m-2 ml-auto"
               >
                 <b-dropdown-item
                   @click="
@@ -106,7 +111,7 @@
                   >Delete</b-dropdown-item
                 >
               </b-dropdown>
-            </b-list-group-item>
+            </div>
           </div>
           <b-card-body class="post-text text-justify">
             {{ post.Post_text }}
@@ -115,24 +120,41 @@
             :src="
               post.Post_imgURL
                 ? post.Post_imgURL
-                : 'https://placekitten.com/300/300'
+                : '../assets/icon-left-font-monochrome-black.png'
             "
             alt="Image"
             bottom
           ></b-card-img>
-          <!-- <b-list-group-item>
+          <div class="like-counter-container">
             <div class="like-icon-with-counter d-flex">
               <b-icon icon="hand-thumbs-up" scale="2"></b-icon>
-              <span class="like-index">2</span>
+              <span class="like-index">{{ post.Likes.length }}</span>
             </div>
-          </b-list-group-item> -->
-          <b-list-group-item class="card-footer">
-            <!-- <div>
-              <b-button size="lg" variant="primary" class="mb-2">
+          </div>
+          <div class="card-footer">
+            <div>
+              <b-button
+                @click="likePost(post.id)"
+                size="lg"
+                :variant="
+                  post.Likes.filter((x) => x.user_id == user.id).length > 0
+                    ? 'primary'
+                    : 'default'
+                "
+                class="mb-2"
+              >
                 <b-icon icon="hand-thumbs-up" class="like-icon"></b-icon>
               </b-button>
-              <span class="like-btn-span">Liked</span>
-            </div> -->
+              <span
+                class="like-btn-span"
+                v-if="
+                  post.Likes.filter((x) => x.user_id == user.id).length > 0
+                    ? true
+                    : false
+                "
+                >Liked</span
+              >
+            </div>
 
             <b-button
               @click="showComment = !showComment"
@@ -142,66 +164,115 @@
             >
               <b-icon icon="chat-left-text" class="comment-icon"></b-icon>
             </b-button>
-          </b-list-group-item>
+          </div>
           <div v-if="showComment">
             <div
-              class="create-div d-flex"
+              class="comment-div d-flex"
               v-for="comment in post.Comments"
               :key="comment.id"
             >
               <b-container fluid>
-                <b-avatar
-                  class="main-avatar"
-                  variant="info"
-                  src="https://placekitten.com/300/300"
-                  size="3rem"
-                ></b-avatar>
+                <div class="comment-header">
+                  <div class="d-flex justify-content-start mb-3">
+                    <!-- <b-avatar
+                      class="main-avatar"
+                      variant="info"
+                      src="https://placekitten.com/300/300"
+                      size="3rem"
+                    ></b-avatar> -->
+                    <b-avatar variant="primary" class="mr-1">{{
+                      comment.User.first_name[0] + comment.User.last_name[0]
+                    }}</b-avatar>
 
-                <b-label
-                  class="create-post-text"
-                  id="textarea-plaintext"
-                  size="sm"
-                  >{{ comment.Comment_text }}</b-label
-                >
+                    <div>
+                      <h6 class="name text-left">
+                        {{
+                          comment.User.first_name + " " + comment.User.last_name
+                        }}
+                      </h6>
+                      <small class="text-left">{{
+                        moment(comment.createdAt).fromNow()
+                      }}</small>
+                    </div>
+
+                    <b-dropdown
+                      id="dropdown-right"
+                      right
+                      text="..."
+                      variant="light"
+                      class="m-2 ml-auto"
+                    >
+                      <b-dropdown-item @click="handleupdate(comment)"
+                        ><b-icon
+                          type="button"
+                          icon="pencil-fill"
+                          class="mr-2"
+                        ></b-icon
+                        >Modify</b-dropdown-item
+                      >
+                      <b-dropdown-item @click="handleDeleteComment(comment.id)"
+                        ><b-icon
+                          type="button"
+                          icon="trash"
+                          class="mr-2"
+                        ></b-icon
+                        >Delete</b-dropdown-item
+                      >
+                    </b-dropdown>
+                  </div>
+                  <div class="comment-user d-flex">
+                    <b-label
+                      class="create-comment-text text-justify"
+                      id="textarea-plaintext"
+                    >
+                      {{ comment.Comment_text }}</b-label
+                    >
+                  </div>
+                </div>
+
                 <div class="comment-image text-center">
-                  <img
+                  <b-img
                     v-if="comment.Comment_text_imgURL"
                     :src="comment.Comment_text_imgURL"
-                    width="50px"
-                    height="50px"
+                    rounded
+                    fluid
                   />
                 </div>
               </b-container>
-              <b-dropdown
+              <!-- <b-dropdown
                 id="dropdown-right"
                 right
                 text="..."
                 variant="light"
                 class="m-2"
+                block
               >
-                <!-- <b-dropdown-item
+                <b-dropdown-item
                   ><b-icon
                     type="button"
                     icon="pencil-fill"
                     class="mr-2"
                   ></b-icon
                   >Modify</b-dropdown-item
-                > -->
+                >
                 <b-dropdown-item @click="handleDeleteComment(comment.id)"
                   ><b-icon type="button" icon="trash" class="mr-2"></b-icon
                   >Delete</b-dropdown-item
                 >
-              </b-dropdown>
+              </b-dropdown> -->
             </div>
 
-            <div class="create-div">
+            <div class="create-comment-container">
               <b-container fluid class="d-flex">
-                <b-avatar
+                <!-- <b-avatar
                   class="main-avatar"
                   variant="info"
                   src="https://placekitten.com/300/300"
                   size="3rem"
-                ></b-avatar>
+                ></b-avatar> -->
+                <b-avatar variant="primary" class="mr-1">{{
+                  UserData.first_name[0] + UserData.last_name[0]
+                }}</b-avatar>
 
                 <b-form-textarea
                   class="create-post-text"
@@ -238,6 +309,16 @@
       <b-modal id="my-modal2"
         ><b-form-file v-model="file3" class="mt-3" plain></b-form-file
       ></b-modal>
+      <b-modal id="UpdateComment" @ok="UpdateComment">
+        <b-input type="text" v-model="commetUpdate.Comment_text"></b-input>
+        <img
+          v-if="commetUpdate.Comment_text_imgURL"
+          :src="commetUpdate.Comment_text_imgURL"
+          alt="comment image"
+          width="100px"
+          height="100px" />
+        <b-form-file v-model="file3" class="mt-3" plain></b-form-file
+      ></b-modal>
     </main>
   </div>
 </template>
@@ -255,6 +336,8 @@ export default {
       file2: null,
       file3: null,
       selectedFile: null,
+      UserData: [],
+      User: "",
       text: "",
       post: "",
       showingComment: "",
@@ -266,6 +349,8 @@ export default {
       AllComment: [],
       showComment: false,
       commentText: "",
+      commetUpdate: {},
+      like: "",
     };
   },
   methods: {
@@ -389,9 +474,83 @@ export default {
         })
         .catch((err) => console.log(err.message));
     },
+    handleupdate(comment) {
+      console.log(comment);
+      this.commetUpdate = comment;
+
+      this.$bvModal.show("UpdateComment");
+    },
+    UpdateComment() {
+      //change to commentid
+      //get file from fle 3
+      //make formdata object
+      let User = JSON.parse(localStorage.getItem("User"));
+      let formdata = new FormData();
+      formdata.append("Comment_text", this.commentText);
+      formdata.append("user_id", User.id);
+      formdata.append("post_id", id);
+      formdata.append("comment_id", comment.id);
+      formdata.append("image", this.file3);
+      console.log(formdata);
+      //fetch and update  access the data using commetUpdate
+      fetch("http://localhost:3000/api/comment/" + comment.user.id, {
+        method: "PUT",
+        headers: {
+          Authorization: `Bearer ${User.token}`,
+        },
+        body: formdata,
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          console.log(data);
+
+          this.$nextTick(() => {
+            this.commentText = "";
+            this.file3 = null;
+            this.getAllPost();
+          });
+        });
+    },
+    likePost(id) {
+      let User = JSON.parse(localStorage.getItem("User"));
+      let token = User.token;
+      let formdata = new FormData();
+      formdata.append("user_id", User.id);
+      formdata.append("post_id", id);
+      fetch("http://localhost:3000/api/like/", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        body: formdata,
+      })
+        .then((data) => data.json())
+        .then((data) => {
+          console.log(data);
+
+          this.$nextTick(() => {
+            this.getAllPost();
+          });
+        });
+    },
   },
   mounted() {
-    this.getAllPost();
+    this.user = JSON.parse(localStorage.getItem("User"));
+    let userID = this.user.id;
+
+    fetch("http://localhost:3000/api/auth/getOne/" + userID, {
+      method: "GET", // or 'PUT'
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        this.UserData = data;
+        console.log(data);
+      })
+      .catch((err) => console.log(err)),
+      this.getAllPost();
   },
 };
 </script>
@@ -423,9 +582,23 @@ export default {
 .main-container {
   width: 50%;
 }
-.create-div {
+.create-post-container {
+  padding: 15px 5px;
   margin: 40px 0;
-  border: 1px solid #f2f2f2;
+  border-radius: 12px;
+  box-shadow: 0 0 5px 5px #e0e0e0;
+  border: 1px solid lightblue;
+}
+
+.comment-header {
+  margin-bottom: 5px;
+}
+
+.create-post-text {
+  border-radius: 18px;
+}
+.user-post {
+  padding: 5px;
 }
 .create-comment-icons {
   margin-top: 5px;
@@ -436,9 +609,13 @@ export default {
 .main-avatar {
   margin-right: 15px;
 }
-
+.post-margin {
+  border-radius: 12px;
+  border: 1px solid lightblue;
+  box-shadow: 0 0 5px 5px #e0e0e0;
+}
 .post-text {
-  padding: 10px;
+  padding: 25px 0;
   color: black;
   line-height: 1.6;
   text-align: justify;
@@ -448,24 +625,51 @@ export default {
   color: #0275d8;
 }
 .like-index {
-  margin-left: 10px;
+  margin-left: 15px;
+  color: black;
 }
 .like-btn-span {
   margin-left: 5px;
   color: #0275d8;
 }
+.like-counter-container {
+  padding: 12px;
+}
 .card-footer {
   display: flex;
   justify-content: space-around;
   background: white;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.125);
 }
 .post-margin {
   margin: 40px 0;
+}
+.comment-div {
+  padding: 8px;
+  margin: 3px 0;
+}
+.name {
+  font-weight: bold;
+}
+
+.comment-user {
+  display: inline-block;
+  padding: 10px;
+  border-radius: 12px;
+  background: #f2f2f2;
+}
+
+.create-comment-container {
+  padding: 8px;
+  margin-top: 5px;
 }
 
 @media all and (max-width: 800px) {
   .main-container {
     width: 100vw;
+  }
+  .searchbar {
+    display: none;
   }
 }
 </style>

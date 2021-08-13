@@ -3,6 +3,7 @@ const fs = require('fs');
 const Post = require('../Models/Post');
 const User = require('../Models/user');
 const Comment = require('../Models/Comment');
+const Like = require('../Models/Likes');
 
 
 exports.createPost = async (req, res, next) => {
@@ -152,7 +153,15 @@ exports.getAllPosts = (req, res, next) => {
       include: {
         model: User
       }
-    }]
+
+    }, {
+
+      model: Like,
+
+    }, ],
+    order: [
+      ['createdAt', 'DESC']
+    ]
   }).then(
     (posts) => {
       res.status(200).json(posts);

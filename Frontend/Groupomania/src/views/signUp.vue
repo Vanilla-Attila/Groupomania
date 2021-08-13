@@ -85,7 +85,7 @@
               </b-input-group>
             </b-form-group>
 
-            <b-form-group
+            <!-- <b-form-group
               label="Image"
               label-for="form-image"
               label-cols-lg="2"
@@ -100,7 +100,7 @@
                   accept="image/*"
                 ></b-form-file>
               </b-input-group>
-            </b-form-group>
+            </b-form-group> -->
 
             <div class="d-flex justify-content-center">
               <b-button

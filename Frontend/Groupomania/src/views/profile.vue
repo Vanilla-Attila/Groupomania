@@ -85,7 +85,7 @@
               </b-input-group>
             </b-form-group>
 
-            <b-form-group
+            <!-- <b-form-group
               label="Image"
               label-for="form-image"
               label-cols-lg="2"
@@ -101,7 +101,7 @@
                   v-model="file"
                 ></b-form-file>
               </b-input-group>
-            </b-form-group>
+            </b-form-group> -->
 
             <div class="d-flex justify-content-center">
               <b-button
@@ -263,4 +263,51 @@ export default {
 </script>
 
 <style>
+.start {
+  background: #f2f2f2;
+  height: 100vh;
+}
+.titles {
+  display: flex;
+  justify-content: center;
+  background: #5bc0de;
+  border-radius: 16px;
+}
+.h2 {
+  text-align: center;
+  margin-bottom: 35px;
+  text-decoration: underline;
+  font-weight: bold;
+}
+.su-img {
+  width: 22%;
+}
+.main-container {
+  text-align: center;
+}
+
+.div-height {
+  position: relative;
+  bottom: 62px;
+}
+
+.div-border {
+  border: 2px solid #5bc0de;
+  padding: 30px 20px;
+  border-radius: 16px;
+}
+
+@media all and (max-width: 800px) {
+  .start {
+    background: none;
+  }
+  .div-height {
+    padding: 0;
+    margin: 20px 0 0 5px;
+  }
+  .su-img {
+    position: relative;
+    bottom: 13px;
+  }
+}
 </style>
